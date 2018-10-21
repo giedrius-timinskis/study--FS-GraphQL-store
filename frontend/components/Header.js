@@ -1,7 +1,21 @@
 import Link from 'next/link';
+import Router from 'next/router';
 import styled from 'styled-components';
+import NProgress from 'nprogress';
 
 import Nav from './Nav';
+
+Router.onRouteChangeStart = () => {
+  NProgress.start();
+};
+
+Router.onRouteChangeComplete = () => {
+  NProgress.done();
+};
+
+Router.onRouteChangeError = () => {
+  NProgress.done();
+};
 
 const Header = (props) => {
   return (
@@ -10,7 +24,7 @@ const Header = (props) => {
       <div className="bar">
         <Logo>
           <Link href="/">
-            <a>Sick Fits!!!</a>
+            <a>Sick Fits</a>
           </Link>
         </Logo>
         <Nav />
