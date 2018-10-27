@@ -15,7 +15,8 @@ function createServer() {
     resolverValidationOptions: {
       requireResolversForResolveType: false,
     },
-    context: req => ({ ...req, db }),
+    context: req => ({ ...req, db }), // Make Prisma database available to Resolvers
+    // ^ Alternatively, we could import DB into each resolver and not use the ctx
   });
 }
 
