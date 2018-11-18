@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import Link from 'next/link';
 
 import User from './User';
+import Signout from './Signout';
 
 const Nav = () => (
   <User>
@@ -22,6 +23,7 @@ const Nav = () => (
             <Link href="/me">
               <a>Account</a>
             </Link>
+            <Signout />
           </>
         )}
 
