@@ -16,9 +16,20 @@ const Mutations = {
     ctx, // context, contains the database defined in generated/prisma.graphql
     info // ???, definitely contains a FE query
   ) {
-    // TODO: Check if user is logged in before creating
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to do that!');
+    }
+
     const item = await ctx.db.mutation.createItem({
-      data: { ...args },
+      data: {
+        // This is how to create a Relationship between Item and User in Prisma
+        user: {
+          connect: {
+            id: ctx.request.userId,
+          }
+        },
+        ...args
+      },
     }, info)
 
     return item;
