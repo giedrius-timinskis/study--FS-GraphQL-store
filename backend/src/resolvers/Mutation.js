@@ -4,6 +4,7 @@ const { randomBytes } = require('crypto');
 const { promisify } = require('util');
 
 const { transport, createEmail } = require('../mail');
+const { hasPermission } = require('../utils');
 
 // This is a RESOLVER for retrieving data via a GraphQL interface from Prisma
 // Look at ../generated/prisma.graphql for the API of methods available
@@ -60,9 +61,14 @@ const Mutations = {
   ) {
     const where = { id: args.id };
     // 1. Find the item
-    const item = await ctx.db.query.item({ where }, `{ id title }`);
+    const item = await ctx.db.query.item({ where }, `{ id title user { id permissions } }`);
     // 2. Check if user owns item/has permissions
-    // TODO:
+    const ownsItem = item.user.id === ctx.request.userId;
+
+    const hasPermissions = ctx.request.user && ctx.request.user.permissions.some(permission => ['ADMIN', 'ITEMDELETE'].includes(permission));
+    if (!ownsItem || !hasPermissions) {
+      throw new Error('You do not have the permission to do that.');
+    }
     // 3. Delete it.
     return ctx.db.mutation.deleteItem({ where }, info);
   },
@@ -181,6 +187,31 @@ const Mutations = {
     });
     // 8. Return the new user
     return updatedUser;
+  },
+  async updatePermissions(parent, args, ctx, info) {
+    // 1. Check if user logged in
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in!');
+    }
+    // 2. Query the current user
+    const currentUser = await ctx.db.query.user({
+      where: {
+        id: ctx.request.userId,
+      }
+    }, info);
+    // 3. Check if the user has permissions to updat epermissions
+    hasPermission(currentUser, ['ADMIN', 'PERMISSIONUPDATE']);
+    // 4. Update permissions
+    return ctx.db.mutation.updateUser({
+      data: {
+        permissions: {
+          set: args.permissions, // Need to do this when it's enum in prisma
+        }
+      },
+      where: {
+        id: args.userId
+      },
+    }, info);
   }
 };
 
