@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import NProgress from 'nprogress';
 
 import Nav from './Nav';
+import Cart from './Cart';
 
 Router.onRouteChangeStart = () => {
   NProgress.start();
@@ -17,29 +18,24 @@ Router.onRouteChangeError = () => {
   NProgress.done();
 };
 
-const Header = (props) => {
-  return (
-    <StyledHeader>
+const Header = props => (
+  <StyledHeader>
+    <div className="bar">
+      <Logo>
+        <Link href="/">
+          <a>Sick Fits</a>
+        </Link>
+      </Logo>
+      <Nav />
+    </div>
 
-      <div className="bar">
-        <Logo>
-          <Link href="/">
-            <a>Sick Fits</a>
-          </Link>
-        </Logo>
-        <Nav />
-      </div>
+    <div className="sub-bar">
+      <p>Search</p>
+    </div>
 
-      <div className="sub-bar">
-        <p>Search</p>
-      </div>
-
-      <div>
-        Cart
-      </div>
-    </StyledHeader>
-  );
-};
+    <Cart />
+  </StyledHeader>
+);
 
 export default Header;
 

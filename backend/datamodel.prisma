@@ -1,3 +1,6 @@
+# This file is used by Prisma to generate a data model
+# Everything generated here will be available to the server side
+
 enum Permission {
   ADMIN
   USER
@@ -15,6 +18,7 @@ type User {
   resetToken: String
   resetTokenExpiry: Float
   permissions: [Permission]
+  cart: [CartItem!]!
 }
 
 
@@ -28,4 +32,11 @@ type Item {
   createdAt: DateTime!
   updatedAt: DateTime!
   user: User!
+}
+
+type CartItem {
+  id: ID! @unique
+  quantity: Int! @default(value: 1)
+  item: Item! #relationship to Item
+  user: User! #relationship to User
 }
